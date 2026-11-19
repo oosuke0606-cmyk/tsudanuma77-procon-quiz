@@ -2059,7 +2059,7 @@
     </section>
 
     <footer class="fest-footer">
-      千葉工業大学 第77回津田沼祭実行委員会 プロコン運営
+      千葉工業大学 第77回津田沼祭実行委員会 プロコン運営（最新版 v4）
     </footer>
 
   </main>
@@ -2217,8 +2217,8 @@
       const GAS_API_URL = '';
       const SPREADSHEET_ID = '1Uzi0neppUSLFZy1PsoV4m-mdN_eZ-3tyNInzswHfrBA';
 
-      const DRAFT_STORAGE_KEY = 'tsudanuma77_procon_quiz_draft_v3';
-      const RESULT_STORAGE_KEY = 'tsudanuma77_procon_quiz_result_v3';
+      const DRAFT_STORAGE_KEY = 'tsudanuma77_procon_quiz_draft_v4';
+      const RESULT_STORAGE_KEY = 'tsudanuma77_procon_quiz_result_v4';
       const PASSING_SCORE = 80;
 
       const DIFFICULTY_META = {
@@ -5643,8 +5643,11 @@
         let errorText = '※回答を1つ選択してください';
 
         if (q.type === 'tf') {
+          const tfOpts = (Array.isArray(q.options) && q.options.length === 2 && typeof q.options[0] === 'object' && q.options[0].val)
+            ? q.options
+            : [{ label: '正しい（〇）', val: '〇' }, { label: '誤り（✕）', val: '✕' }];
           bodyHtml = '<div class="tf-options-grid" role="radiogroup" data-qid="' + q.id + '">' +
-            q.options.map(function(opt) {
+            tfOpts.map(function(opt) {
               const isSelected = state.answers[q.id] === opt.val;
               return '<button type="button" class="opt-btn tf-btn' + (isSelected ? ' selected' : '') + '" data-val="' + opt.val + '">' +
                 '<span class="tf-mark">' + opt.val + '</span><span>' + opt.label + '</span>' +

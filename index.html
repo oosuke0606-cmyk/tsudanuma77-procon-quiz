@@ -2052,7 +2052,7 @@
     </section>
 
     <footer class="fest-footer">
-      千葉工業大学 第77回津田沼祭実行委員会 プロコン運営（最新版 v5）
+      千葉工業大学 第77回津田沼祭実行委員会 プロコン運営（最新版 v6）
     </footer>
 
   </main>
@@ -5393,25 +5393,39 @@
       }
 
       function initStaffNameSelector() {
-        const groups = [];
-        const groupMap = {};
+        const gradeOrder = [
+          { key: '1回生', label: '1回生' },
+          { key: '2回生', label: '2回生' },
+          { key: '3回生', label: '3回生' },
+          { key: '4回生', label: '4回生' },
+          { key: 'other', label: '受付長・救護連携' }
+        ];
+        const gradeMap = { '1回生': [], '2回生': [], '3回生': [], '4回生': [], 'other': [] };
         STAFF_ROSTER.forEach(function(m) {
-          if (!groupMap[m.group]) {
-            groupMap[m.group] = [];
-            groups.push(m.group);
+          if (gradeMap[m.grade]) {
+            gradeMap[m.grade].push(m);
+          } else {
+            gradeMap['other'].push(m);
           }
-          groupMap[m.group].push(m);
         });
 
-        let html = '<option value="">▼ 自分の氏名を選択してください（敬称略・シフト表準拠）</option>';
-        groups.forEach(function(gName) {
-          html += '<optgroup label="' + escapeHtml(gName) + '">';
-          groupMap[gName].forEach(function(m) {
-            html += '<option value="' + escapeHtml(m.name) + '">' + escapeHtml(m.name) + '（' + escapeHtml(m.grade) + '｜' + escapeHtml(m.schedule) + '）</option>';
+        Object.keys(gradeMap).forEach(function(k) {
+          gradeMap[k].sort(function(a, b) {
+            return a.name.localeCompare(b.name, 'ja');
+          });
+        });
+
+        let html = '<option value="">▼ 自分の氏名を選択してください（回生順・敬称略）</option>';
+        gradeOrder.forEach(function(g) {
+          const list = gradeMap[g.key];
+          if (!list || list.length === 0) return;
+          html += '<optgroup label="【' + escapeHtml(g.label) + '】">';
+          list.forEach(function(m) {
+            html += '<option value="' + escapeHtml(m.name) + '">' + escapeHtml(m.name) + '（' + escapeHtml(m.grade) + '｜' + escapeHtml(m.group) + '）</option>';
           });
           html += '</optgroup>';
         });
-        html += '<optgroup label="その他（シフト表外・手動入力）">';
+        html += '<optgroup label="【その他（シフト表外・手動入力）】">';
         html += '<option value="__custom__">その他（氏名を自由入力してポジションを手動選択）</option>';
         html += '</optgroup>';
         staffNameSelect.innerHTML = html;
